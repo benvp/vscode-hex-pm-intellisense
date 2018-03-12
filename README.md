@@ -10,7 +10,7 @@ Because it bugged me, that I always have to go to hex.pm first to check for the 
 
 ## How does it look?
 
-
+![hex-pm-intellisense-vscode](https://drp.sh/2c2y3v3M1I2M/vscode-hex-pm-intellisense.gif)
 
 ## Requirements
 

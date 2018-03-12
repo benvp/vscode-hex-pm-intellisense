@@ -4,6 +4,7 @@
     "description": "Adds IntelliSense for hex.pm dependencies in your Elix && ir project Mixfile.",
     "version": "0.0.1",
     "publisher": "benvp",
+    "icon": "images/icon.png",
     "engines": {
         "vscode": "^1.21.0"
     },
