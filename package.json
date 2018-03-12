@@ -1,0 +1,48 @@
+{
+    "name": "vscode-hex-pm-intellisense",
+    "displayName": "hex.pm IntelliSense",
+    "description": "Adds IntelliSense for hex.pm dependencies in your Elix && ir project Mixfile.",
+    "version": "0.0.1",
+    "publisher": "benvp",
+    "engines": {
+        "vscode": "^1.21.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:elixir"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "elixir",
+                "aliases": [
+                    "Elixir"
+                ],
+                "extensions": [
+                    ".exs"
+                ]
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^7.0.43",
+        "tslint": "^5.8.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6"
+    },
+    "dependencies": {
+        "axios": "^0.18.0",
+        "semver": "^5.5.0"
+    }
+}
