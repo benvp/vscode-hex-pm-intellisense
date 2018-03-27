@@ -14,19 +14,22 @@ function isCursorInDepsBlock(document: vscode.TextDocument, position: vscode.Pos
   const leftRange = new vscode.Range(fileStartPosition, position);
   const leftText = document.getText(leftRange);
 
-  const indexOfDepsHead = leftText.indexOf('defp deps do'); //assumes rigid formatting of deps function head
+  const depsBlockRegex = /def[p]?[\s]+deps[\s]+do$/m; //assumes there is only one `deps` function
+  const indexOfDepsHead = leftText.search(depsBlockRegex);
+  // console.log(indexOfDepsHead);
   if (indexOfDepsHead <= -1) {
     return false;
   }
 
-  const leftTextDepsHeadToCursor = leftText.substr(indexOfDepsHead);
-  //console.log(leftTextDepsHeadToCursor);
+  const depsHeadToCursor = leftText.substr(indexOfDepsHead);
+  // console.log(depsHeadToCursor);
 
-  if (leftTextDepsHeadToCursor.includes('end')) { //assumes end does not appear in the deps block
-    //console.log("cursor NOT in deps block");
+  const depsBlockEndRegex = /^[\s]*end$/m;
+  if (depsHeadToCursor.search(depsBlockEndRegex) > -1) { //assumes `end` does not appear by itself in a line in deps block
+    // console.log("cursor NOT in deps block");
     return false;
   }
 
-  //console.log("cursor in deps block");
+  // console.log("cursor in deps block");
   return true;
 }
