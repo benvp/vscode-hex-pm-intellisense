@@ -26,6 +26,11 @@ None - as for now.
 
 ## Release Notes
 
+### 0.2.0
+
+- Improves detection of the `deps` block.
+- Sorts suggestions in descending order.
+
 ### 0.1.0
 
 First version with IntelliSense for mix.exs files enabled.

@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to the "vscode-hex-pm-intellisense" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## 0.2.0
+- Improves detection of the `deps` block.
+- Sorts suggestions in descending order.
 
-## [Unreleased]
-- Initial release
+Thanks a lot @xmbhasin for contributing to this release.
+
+## 0.1.0
+First version with IntelliSense for mix.exs files enabled.
