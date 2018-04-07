@@ -1,6 +1,6 @@
 # vscode-hex-pm-intellisense README
 
-This Package adds IntelliSense for hex.pm dependencies in your Elix && ir project Mixfile. It uses the hex.pm API to receive the versions according to the current package.
+This Package adds IntelliSense for hex.pm dependencies in your Elixir project Mixfile. It uses the hex.pm API to receive the versions according to the current package.
 
 The extension is in an early stage, so there is plenty of room for improvements. Contributions are welcome. 🙂
 
