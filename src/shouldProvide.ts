@@ -1,24 +1,39 @@
 import * as vscode from 'vscode';
 
-export function shouldProvide(document: vscode.TextDocument, position: vscode.Position): boolean {
-  return isMixfile(document.fileName) && isCursorInDepsBlock(document, position);
+export function shouldProvide(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): boolean {
+  return (
+    isMixfile(document.fileName) && isCursorInDepsBlock(document, position)
+  );
 }
 
 function isMixfile(fileName: String): boolean {
   return fileName.endsWith('mix.exs');
 }
 
-function isCursorInDepsBlock(document: vscode.TextDocument, position: vscode.Position): boolean {
+function isCursorInDepsBlock(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): boolean {
   // find deps function definition 'defp deps do'
-  const fileStartPosition = new vscode.Position(0, 0);
-  const fileEndPosition = new vscode.Position(document.lineCount, document.lineAt(document.lineCount - 1).range.end.character);
-  const leftRange = new vscode.Range(fileStartPosition, position);
-  const rightRange = new vscode.Range(position, fileEndPosition);
-  const leftText = document.getText(leftRange);
-  const rightText = document.getText(rightRange);
-  const indexOfDepsHead = leftText.indexOf('defp deps do');
-  const indexOfDepsEnd = rightText.indexOf('end');
-  const indexOfNextFunctionHead = rightText.indexOf('def') || rightText.indexOf('defp');
+  const leftText = document.getText(
+    new vscode.Range(new vscode.Position(0, 0), position)
+  );
 
-  return indexOfDepsHead > -1 && indexOfDepsEnd > -1 && indexOfDepsEnd < indexOfNextFunctionHead;
+  const depsHeadRegex = /def[p]?[\s]+deps[\s]+do$/m; // assumes there is only one `deps` function
+  const indexOfDepsHead = leftText.search(depsHeadRegex);
+  if (indexOfDepsHead <= -1) {
+    return false;
+  }
+
+  const depsHeadToCursor = leftText.substr(indexOfDepsHead);
+  const depsEndRegex = /^[\s]*end$/m;
+  if (depsHeadToCursor.search(depsEndRegex) > -1) {
+    // assumes `end` does not appear by itself in a line in deps block
+    return false;
+  }
+
+  return true;
 }
