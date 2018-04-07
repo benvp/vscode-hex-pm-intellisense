@@ -47,8 +47,15 @@ function tupleBeginIndex(line: vscode.TextLine, position: vscode.Position): numb
 }
 
 function sortCompletionItems(completionItems: vscode.CompletionItem[]): vscode.CompletionItem[] {
-  const sorted = completionItems.sort((a, b) => semver.rcompare(a.label, b.label));
-  sorted.forEach((item, idx) => (item.sortText = `000-${idx.toString()}`));
+  // descending sort using semver: most recent version first
+  const sorted = completionItems.sort((a, b) =>
+    semver.rcompare(a.label, b.label)
+  );
+  // comply with js lexicographic sorting as vscode does not allow alternative sorting
+  // maintain sort using 0-9 prefixed with z for each place value
+  sorted.forEach((item, idx) => 
+    item.sortText = `${'z'.repeat(Math.trunc(idx/10))}${idx%10}`
+  );
 
   return sorted;
 }
