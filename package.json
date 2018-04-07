@@ -2,7 +2,7 @@
     "name": "vscode-hex-pm-intellisense",
     "displayName": "hex.pm IntelliSense",
     "description": "Adds IntelliSense for hex.pm dependencies in your Elixir project Mixfile.",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "publisher": "benvp",
     "icon": "images/icon.png",
     "repository": {
