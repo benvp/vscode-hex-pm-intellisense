@@ -5,7 +5,9 @@ export function shouldProvide(
   position: vscode.Position
 ): boolean {
   return (
-    isMixfile(document.fileName) && isCursorInDepsBlock(document, position)
+    isMixfile(document.fileName) &&
+    isCursorInDepsBlock(document, position) &&
+    isCursorInString(document, position)
   );
 }
 
@@ -32,6 +34,27 @@ function isCursorInDepsBlock(
   const depsEndRegex = /^[\s]*end$/m;
   if (depsHeadToCursor.search(depsEndRegex) > -1) {
     // assumes `end` does not appear by itself in a line in deps block
+    return false;
+  }
+
+  return true;
+}
+
+function isCursorInString(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): boolean {
+  const line = document.lineAt(position.line);
+
+  const leftText = document.getText(
+    new vscode.Range(line.range.start, position)
+  );
+
+  const rightText = document.getText(
+    new vscode.Range(position, line.range.end)
+  );
+
+  if (leftText.indexOf('"') === -1 || rightText.indexOf('"') === -1) {
     return false;
   }
 
