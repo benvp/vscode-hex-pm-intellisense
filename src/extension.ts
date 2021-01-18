@@ -7,7 +7,7 @@ import { HexCompletion } from './HexCompletion';
 export function activate(context: vscode.ExtensionContext) {
     const provider = new HexCompletion();
     const selector = ["elixir", "Elixir"];
-    const triggers = ['"'];
+    const triggers = ['"', ' '];
     const hexCompletion = vscode.languages.registerCompletionItemProvider(selector, provider, ...triggers);
 
     context.subscriptions.push(hexCompletion);
