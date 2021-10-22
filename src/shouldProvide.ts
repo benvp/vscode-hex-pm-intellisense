@@ -5,14 +5,9 @@ export function shouldProvide(
   position: vscode.Position
 ): boolean {
   return (
-    isMixfile(document.fileName) &&
     isCursorInDepsBlock(document, position) &&
     isCursorInString(document, position)
   );
-}
-
-function isMixfile(fileName: String): boolean {
-  return fileName.endsWith('mix.exs');
 }
 
 function isCursorInDepsBlock(
