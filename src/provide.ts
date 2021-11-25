@@ -3,7 +3,10 @@ import * as hexpm from './hexpm';
 
 const semver = require('semver');
 
-export function provide(document: vscode.TextDocument, position: vscode.Position): Thenable<vscode.CompletionItem[]> {
+export function provide(
+  document: vscode.TextDocument,
+  position: vscode.Position,
+): Thenable<vscode.CompletionItem[]> {
   const line = document.lineAt(position.line);
   const packageName = getPackageName(line, position);
 
@@ -15,10 +18,11 @@ export function provide(document: vscode.TextDocument, position: vscode.Position
 }
 
 function getVersionsForPackage(packageName: String): Promise<vscode.CompletionItem[]> {
-  return hexpm.getPackage(packageName)
-    .then(res => completionItemsForReleases(res.releases))
-    .then(sortCompletionItems)
-    .catch(error => {
+  return hexpm
+    .getPackage(packageName)
+    .then(partitionReleases)
+    .then(createCompletionItems)
+    .catch((error) => {
       if (error.response.status === 404) {
         return [];
       }
@@ -46,23 +50,62 @@ function tupleBeginIndex(line: vscode.TextLine, position: vscode.Position): numb
   return tupleBeginIndex;
 }
 
-function sortCompletionItems(completionItems: vscode.CompletionItem[]): vscode.CompletionItem[] {
-  // descending sort using semver: most recent version first
-  const sorted = completionItems.sort((a, b) =>
-    semver.rcompare(a.label, b.label)
+type PartitionedRelease = {
+  stable?: hexpm.HexRelease;
+  rest: hexpm.HexRelease[];
+  retired: hexpm.HexRelease[];
+};
+
+function partitionReleases(p: hexpm.HexPackage): PartitionedRelease {
+  // filter out retired packages
+  const retired = p.releases.filter((r) => Object.keys(p.retirements).includes(r.version));
+  const stable = p.releases.find((r) => r.version === p.latest_stable_version);
+  const rest = p.releases.filter(
+    (r) => retired.every((x) => x.version !== r.version) && r.version !== stable?.version,
   );
-  // comply with js lexicographic sorting as vscode does not allow alternative sorting
-  // maintain sort using 0-9 prefixed with z for each place value
-  sorted.forEach((item, idx) => 
-    item.sortText = `${'z'.repeat(Math.trunc(idx/10))}${idx%10}`
-  );
+
+  return {
+    stable,
+    retired,
+    rest,
+  };
+}
+
+function createCompletionItems(releases: PartitionedRelease): vscode.CompletionItem[] {
+  const stable = releases.stable
+    ? new vscode.CompletionItem(releases.stable.version, vscode.CompletionItemKind.Property)
+    : null;
+
+  if (stable) {
+    stable.detail = 'latest stable';
+  }
+
+  const retired = releases.retired.map((r) => {
+    const item = new vscode.CompletionItem(r.version, vscode.CompletionItemKind.Property);
+    item.detail = 'retired';
+    return item;
+  });
+
+  const rest = releases.rest.map((r) => {
+    return new vscode.CompletionItem(r.version, vscode.CompletionItemKind.Property);
+  });
+
+  const sortBySemver = (a: vscode.CompletionItem, b: vscode.CompletionItem) =>
+    semver.compare(b.label, a.label);
+
+  const sorted = [
+    ...(stable ? [stable] : []),
+    ...[...rest].sort(sortBySemver),
+    ...[...retired].sort(sortBySemver),
+  ];
+
+  sorted.forEach(applySortText);
 
   return sorted;
 }
 
-function completionItemsForReleases(releases: any[]): vscode.CompletionItem[] {
-  return releases.map((rel, index, arr) => {
-    const completionItem = new vscode.CompletionItem(rel.version, vscode.CompletionItemKind.Property);
-    return completionItem;
-  });
+function applySortText(item: vscode.CompletionItem, index: number) {
+  item.sortText = `${'z'.repeat(Math.trunc(index / 10))}${index % 10}`;
+
+  return item;
 }
