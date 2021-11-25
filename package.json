@@ -4,6 +4,7 @@
     "description": "Adds IntelliSense for hex.pm dependencies in your Elixir project Mixfile.",
     "version": "0.5.0",
     "publisher": "benvp",
+    "license": "MIT",
     "icon": "images/icon.png",
     "repository": {
         "type": "git",
